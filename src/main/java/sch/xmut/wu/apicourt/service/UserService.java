@@ -3,7 +3,10 @@ package sch.xmut.wu.apicourt.service;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import redis.clients.jedis.Jedis;
 import sch.xmut.wu.apicourt.constant.CacheConstant;
 import sch.xmut.wu.apicourt.entity.ArenaEntity;
@@ -14,6 +17,7 @@ import sch.xmut.wu.apicourt.http.request.UserBookRequest;
 import sch.xmut.wu.apicourt.http.request.UserCollectRequest;
 import sch.xmut.wu.apicourt.http.request.UserRequest;
 import sch.xmut.wu.apicourt.http.response.BaseResponse;
+import sch.xmut.wu.apicourt.http.response.LayerResponse;
 import sch.xmut.wu.apicourt.http.response.UserCollectResponse;
 import sch.xmut.wu.apicourt.http.vo.Arena;
 import sch.xmut.wu.apicourt.http.vo.User;
@@ -88,6 +92,46 @@ public class UserService {
             arenaList.add(arena);
         }
         response.setArenaList(arenaList);
+        return response;
+    }
+
+    public LayerResponse getUserList(Pageable pageable) {
+        Page<UserEntity> pageList = userRepository.findAll(pageable);
+        List<User> userList = new ArrayList<>();
+        for (UserEntity userEntity : pageList) {
+            User user = new User();
+            BeanUtils.copyProperties(userEntity, user);
+            userList.add(user);
+        }
+        List<User> list = convertToUserList(userRepository.findAll());//所有用户数 用于获取数量
+        LayerResponse response = new LayerResponse();
+        response.setData(userList);
+        response.setCount(list.size());
+        return response;
+    }
+
+    private List<User> convertToUserList(List<UserEntity> userEntityList) {
+        if (CollectionUtils.isEmpty(userEntityList))
+            return null;
+        List<User> list = new ArrayList<>();
+        for (UserEntity userEntity : userEntityList) {
+            User user = new User();
+            BeanUtils.copyProperties(userEntity, user);
+            list.add(user);
+        }
+        return list;
+    }
+
+    public LayerResponse findUser(UserRequest userRequest) {
+        LayerResponse response = new LayerResponse();
+        List<UserEntity> userEntityList = userRepository.findUser(userRequest.getUserName(), userRequest.getWechatNumber());
+        List<User> userList = convertToUserList(userEntityList);
+        if (CollectionUtils.isEmpty(userList)) {
+            response.setMsg("查询不到用户信息");
+            return response;
+        }
+        response.setData(userList);
+        response.setCount(userList.size());
         return response;
     }
 }

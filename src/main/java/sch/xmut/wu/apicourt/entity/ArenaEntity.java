@@ -108,4 +108,12 @@ public class ArenaEntity implements Serializable {
     public void setEndTime(Date endTime) {
         this.endTime = endTime;
     }
+
+    public Integer getIsRecommend() {
+        return isRecommend;
+    }
+
+    public void setIsRecommend(Integer isRecommend) {
+        this.isRecommend = isRecommend;
+    }
 }

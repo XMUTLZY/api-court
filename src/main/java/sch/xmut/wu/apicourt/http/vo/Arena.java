@@ -33,6 +33,12 @@ public class Arena implements Serializable {
     @JsonProperty("price")    //价格
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Double price;
+    @JsonProperty("status_str")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String statusStr;
+    @JsonProperty("recommend_str")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String recommendStr;
 
     public Integer getId() {
         return id;
@@ -128,5 +134,21 @@ public class Arena implements Serializable {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public String getStatusStr() {
+        return statusStr;
+    }
+
+    public void setStatusStr(String statusStr) {
+        this.statusStr = statusStr;
+    }
+
+    public String getRecommendStr() {
+        return recommendStr;
+    }
+
+    public void setRecommendStr(String recommendStr) {
+        this.recommendStr = recommendStr;
     }
 }
